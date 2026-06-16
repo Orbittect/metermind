@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeterMind — Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --blue:#1a56db; --blue-lt:#e8f0fd; --red:#c81e1e; --red-lt:#fde8e8; --gray-200:#e5e7eb; --gray-400:#9ca3af; --gray-600:#4b5563; }
+    body { font-family: 'Inter', sans-serif; font-size: 14px; background: #f3f4f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .box { background: white; border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+    h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .sub { font-size: 13px; color: var(--gray-600); margin-bottom: 24px; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-600); margin-bottom: 5px; }
+    input { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border .15s; }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.1); }
+    .btn { width: 100%; padding: 11px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+    .btn:hover { opacity: .9; }
+    .flash { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; background: var(--red-lt); color: var(--red); }
+    .footer-link { text-align: center; margin-top: 18px; font-size: 13px; color: var(--gray-600); }
+    .footer-link a { color: var(--blue); text-decoration: none; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Create your account</h1>
+    <p class="sub">Start monitoring your water bills</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required placeholder="e.g. ami_triangle"/>
+      </div>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="At least 8 characters"/>
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••"/>
+      </div>
+      <button class="btn" type="submit">Create account</button>
+    </form>
+
+    <div class="footer-link">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+    </div>
+  </div>
+</body>
+</html>

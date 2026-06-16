@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}MeterMind{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:    #1a56db;
+      --blue-lt: #e8f0fd;
+      --green:   #057a55;
+      --green-lt:#def7ec;
+      --red:     #c81e1e;
+      --red-lt:  #fde8e8;
+      --yellow:  #92400e;
+      --yel-lt:  #fef3c7;
+      --gray-50: #f9fafb;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-400:#9ca3af;
+      --gray-600:#4b5563;
+      --gray-900:#111827;
+      --radius:  8px;
+      --shadow:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    }
+    body { font-family: 'Inter', sans-serif; font-size: 14px; color: var(--gray-900); background: var(--gray-50); min-height: 100vh; }
+
+    /* Nav */
+    nav { background: white; border-bottom: 1px solid var(--gray-200); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-brand svg { width: 24px; height: 24px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-user { font-size: 13px; color: var(--gray-600); }
+    .nav-link { font-size: 13px; color: var(--gray-600); text-decoration: none; padding: 6px 12px; border-radius: var(--radius); transition: background .15s; }
+    .nav-link:hover { background: var(--gray-100); color: var(--gray-900); }
+    .nav-link.logout { color: var(--red); }
+
+    /* Alert badge */
+    .alert-badge { background: var(--red); color: white; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 20px; margin-left: 4px; }
+
+    /* Main */
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* Flash messages */
+    .flash-wrap { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .flash { padding: 12px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; }
+    .flash.error   { background: var(--red-lt);  color: var(--red); }
+    .flash.success { background: var(--green-lt); color: var(--green); }
+    .flash.warning { background: var(--yel-lt);  color: var(--yellow); }
+    .flash.info    { background: var(--blue-lt);  color: var(--blue); }
+
+    /* Cards */
+    .card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-title { font-size: 16px; font-weight: 600; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: opacity .15s, background .15s; }
+    .btn:hover { opacity: .88; }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-outline { background: white; color: var(--gray-900); border: 1px solid var(--gray-200); }
+    .btn-outline:hover { background: var(--gray-50); opacity: 1; }
+    .btn-danger  { background: var(--red-lt); color: var(--red); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-green { background: var(--green-lt); color: var(--green); }
+
+    /* Forms */
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--gray-600); }
+    input[type=text], input[type=email], input[type=password], input[type=number], select {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius);
+      font-size: 14px; font-family: inherit; outline: none; transition: border .15s;
+    }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.1); }
+    .form-hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; }
+    .checkbox-label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+    .checkbox-label input { width: auto; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; background: var(--gray-50); color: var(--gray-600); font-weight: 500; border-bottom: 1px solid var(--gray-200); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    td { padding: 12px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gray-50); }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-ok      { background: var(--green-lt); color: var(--green); }
+    .badge-warn    { background: var(--yel-lt);   color: var(--yellow); }
+    .badge-error   { background: var(--red-lt);   color: var(--red); }
+    .badge-pending { background: var(--gray-100); color: var(--gray-600); }
+
+    /* Stats row */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .stat-val  { font-size: 28px; font-weight: 700; line-height: 1; }
+    .stat-lbl  { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 48px 24px; color: var(--gray-400); }
+    .empty p { margin-top: 8px; font-size: 13px; }
+
+    /* Alert list */
+    .alert-list { display: flex; flex-direction: column; gap: 8px; }
+    .alert-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 16px; border-radius: var(--radius); font-size: 13px; }
+    .alert-item.no_new_bill  { background: var(--blue-lt);  color: var(--blue); }
+    .alert-item.high_bill    { background: var(--red-lt);   color: var(--red); }
+    .alert-item.high_balance { background: var(--yel-lt);   color: var(--yellow); }
+    .alert-time { font-size: 11px; opacity: .7; white-space: nowrap; margin-left: 12px; }
+    .mark-read-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 0; opacity: .5; }
+    .mark-read-btn:hover { opacity: 1; }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+{% if current_user.is_authenticated %}
+<nav>
+  <a class="nav-brand" href="{{ url_for('main.dashboard') }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    MeterMind
+  </a>
+  <div class="nav-right">
+    <span class="nav-user">{{ current_user.username }}</span>
+    <a class="nav-link" href="{{ url_for('props.add') }}">+ Add Property</a>
+    <a class="nav-link logout" href="{{ url_for('auth.logout') }}">Log out</a>
+  </div>
+</nav>
+{% endif %}
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+  // Mark alert as read
+  function markRead(alertId, btn) {
+    fetch(`/alerts/mark-read/${alertId}`, {method:'POST'})
+      .then(() => btn.closest('.alert-item').remove());
+  }
+</script>
+</body>
+</html>

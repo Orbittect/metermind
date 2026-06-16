@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeterMind — Log In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --blue:#1a56db; --blue-lt:#e8f0fd; --red:#c81e1e; --red-lt:#fde8e8; --gray-200:#e5e7eb; --gray-400:#9ca3af; --gray-600:#4b5563; }
+    body { font-family: 'Inter', sans-serif; font-size: 14px; background: #f3f4f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .box { background: white; border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+    .logo { text-align: center; margin-bottom: 28px; }
+    .logo-icon { width: 48px; height: 48px; background: var(--blue-lt); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .logo-icon svg { width: 28px; height: 28px; color: var(--blue); }
+    h1 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+    .sub { font-size: 13px; color: var(--gray-600); text-align: center; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-600); margin-bottom: 6px; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border .15s; }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.1); }
+    .btn { width: 100%; padding: 11px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+    .btn:hover { opacity: .9; }
+    .flash { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; background: var(--red-lt); color: var(--red); }
+    .footer-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gray-600); }
+    .footer-link a { color: var(--blue); text-decoration: none; font-weight: 500; }
+    .remember { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); }
+    .remember input { width: auto; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <h1>MeterMind</h1>
+      <p class="sub">Water bill monitoring for property managers</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username" placeholder="Your username"/>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••"/>
+      </div>
+      <div class="form-group">
+        <label class="remember">
+          <input type="checkbox" name="remember"/> Keep me logged in
+        </label>
+      </div>
+      <button class="btn" type="submit">Log in</button>
+    </form>
+
+    <div class="footer-link">
+      Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a>
+    </div>
+  </div>
+</body>
+</html>

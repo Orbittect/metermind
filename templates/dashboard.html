@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — MeterMind{% endblock %}
+
+{% block content %}
+
+<!-- Stats row -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val">{{ properties|length }}</div>
+    <div class="stat-lbl">Properties</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#057a55">{{ properties|selectattr('scrape_status','eq','ok')|list|length }}</div>
+    <div class="stat-lbl">Last check OK</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#c81e1e">{{ unread_alerts|length }}</div>
+    <div class="stat-lbl">Unread alerts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#92400e">{{ properties|selectattr('no_new_bill')|list|length }}</div>
+    <div class="stat-lbl">No new bill</div>
+  </div>
+</div>
+
+<!-- Alerts panel -->
+{% if unread_alerts %}
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <span class="card-title">🔔 Alerts</span>
+    <form method="POST" action="{{ url_for('main.mark_all_read') }}" style="display:inline">
+      <button class="btn btn-outline btn-sm" type="submit">Mark all read</button>
+    </form>
+  </div>
+  <div class="alert-list">
+    {% for alert in unread_alerts %}
+    <div class="alert-item {{ alert.alert_type }}" id="alert-{{ alert.id }}">
+      <span>{{ alert.message }}</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span class="alert-time">{{ alert.created_at.strftime('%b %d, %I:%M %p') }}</span>
+        <button class="mark-read-btn" onclick="markRead({{ alert.id }}, this)" title="Dismiss">✕</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Properties table -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Your Properties</span>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('props.add') }}">+ Add Property</a>
+  </div>
+
+  {% if properties %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Service Address</th>
+          <th>Account #</th>
+          <th>Current Bill</th>
+          <th>Bill Date</th>
+          <th>Last Pay</th>
+          <th>Max</th>
+          <th>Check Day</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in properties %}
+        <tr>
+          <td style="font-weight:500">{{ p.service_address }}</td>
+          <td style="font-family:monospace;font-size:12px">{{ p.account_number }}</td>
+          <td>
+            {% if p.current_bill is not none %}
+              <span style="font-weight:600;{% if p.is_over_max %}color:#c81e1e{% endif %}">
+                ${{ "%.2f"|format(p.current_bill) }}
+              </span>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if p.current_bill_date %}
+              {{ p.current_bill_date }}
+              {% if p.no_new_bill %}
+                <span class="badge badge-warn" style="margin-left:4px">{{ p.days_since_bill }}d ago</span>
+              {% endif %}
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if p.last_pay_date %}
+              {{ p.last_pay_date }}
+              {% if p.last_pay_amount %}
+                <span style="color:#4b5563"> · ${{ "%.0f"|format(p.last_pay_amount) }}</span>
+              {% endif %}
+            {% else %}—{% endif %}
+          </td>
+          <td>${{ "%.0f"|format(p.max_bill_amount) }}</td>
+          <td>{{ p.check_day }}{{ 'st' if p.check_day == 1 else ('nd' if p.check_day == 2 else ('rd' if p.check_day == 3 else 'th')) }}</td>
+          <td>
+            {% if p.scrape_status == 'ok' %}
+              <span class="badge badge-ok">OK</span>
+            {% elif p.scrape_status == 'error' %}
+              <span class="badge badge-error">Error</span>
+            {% else %}
+              <span class="badge badge-pending">Pending</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <form method="POST" action="{{ url_for('props.manual_check', prop_id=p.id) }}" style="display:inline">
+                <button class="btn btn-green btn-sm" type="submit" title="Check now">↻ Check</button>
+              </form>
+              <a class="btn btn-outline btn-sm" href="{{ url_for('props.edit', prop_id=p.id) }}">Edit</a>
+              <form method="POST" action="{{ url_for('props.delete', prop_id=p.id) }}"
+                    onsubmit="return confirm('Remove {{ p.service_address }}?')" style="display:inline">
+                <button class="btn btn-danger btn-sm" type="submit">✕</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div style="font-size:40px">🏠</div>
+    <p>No properties yet. Add your first one to start monitoring.</p>
+    <a class="btn btn-primary" href="{{ url_for('props.add') }}" style="margin-top:16px">+ Add Property</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
