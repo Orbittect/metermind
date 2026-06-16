@@ -8,7 +8,7 @@ Private web app for monitoring Baltimore City water bills across multiple proper
 - Per property: set a max bill amount, alert type, notification method, and check day
 - On the scheduled day each month, the app checks the Baltimore water portal
 - Alerts if bill exceeds max, or if no new bill has been generated in 33+ days
-- Notifications: in-app (on login) and/or email
+- Notifications: in-app (on login) and/or email...
 
 ---
 
